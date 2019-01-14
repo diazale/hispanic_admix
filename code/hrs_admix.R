@@ -1,5 +1,3 @@
-library(ggplot2)
-library(magrittr)
 library(tidyverse)
 
 # Run some linear regression on admixture levels on the HRS

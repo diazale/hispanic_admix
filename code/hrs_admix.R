@@ -26,10 +26,18 @@ hrs_data_mex$BirthRegionNum <- as.factor(hrs_data_mex$BirthRegionNum)
 # ADMIX2 = EUR
 # ADMIX3 = Native American / Asian
 
-##### Native American ancestry as a function of birth year #####
-
+##### Ancestry as a function of birth year #####
+# Native American ancestry
 lm_admix <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex)
 summary(lm_admix)
+
+# European ancestry
+lm_admix_eur <- lm(ADMIX2 ~ BirthYear, data = hrs_data_mex)
+summary(lm_admix_eur)
+
+# African ancestry
+lm_admix_afr <- lm(ADMIX1 ~ BirthYear, data = hrs_data_mex)
+summary(lm_admix_afr)
 
 ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) + 
   geom_point() +

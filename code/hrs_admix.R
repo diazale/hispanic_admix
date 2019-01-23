@@ -28,7 +28,7 @@ hrs_data_mex$BirthRegionNum <- as.factor(hrs_data_mex$BirthRegionNum)
 
 ##### Ancestry as a function of birth year #####
 # Native American ancestry
-lm_admix <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex)
+lm_admix <- lm(ADMIX3 ~ BirthYear + BirthRegionName, data = hrs_data_mex)
 summary(lm_admix)
 
 # European ancestry
@@ -145,6 +145,21 @@ ggplot(df_mean_bs, aes(x = ADMIX3, y = BirthDecade, group = BirthDecade)) +
   geom_density_ridges()
 
 # Work within the self-identified white population
-hrs_data_mex_white_pre70s <- subset(hrs_data_mex, BirthYear < 1970 && as.character(Race_HRS) == "White")
+hrs_data_mex_white_pre70s <- subset(hrs_data_mex, BirthYear < 1970 &
+                                      (as.character(Race_HRS) == "White"))
 lm_admix_mex_white_pre70s <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex_white_pre70s)
 summary(lm_admix_mex_white_pre70s)
+
+hrs_data_mex_white <- subset(hrs_data_mex, as.character(Race_HRS) == "White")
+lm_admix_mex_white <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex_white)
+summary(lm_admix_mex_white)
+
+# Drop the 4 youngest individuals
+hrs_data_mex_pre70s <- subset(hrs_data_mex, BirthYear < 1970)
+lm_admix_mex_pre70s <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex_pre70s)
+summary(lm_admix_mex_pre70s)
+
+##### Playing around with different data samples #####
+hrs_data_mex_1920_1959 <- subset(hrs_data_mex, BirthYear < 1960 & BirthYear >= 1920)
+lm_1920_1959 <- lm(ADMIX3 ~ BirthYear, hrs_data_mex_1920_1959)
+summary(lm_1920_1959)

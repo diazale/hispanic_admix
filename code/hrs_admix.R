@@ -178,25 +178,54 @@ summary(lm_1920_1959)
 lm_func <- function(dset, i){
   d2 <- dset[i,]
   lm_admix_bs <- lm(ADMIX3 ~ BirthYear, data = d2)
+  
+  # Extract the coefficients of interest
   return(c(summary(lm_admix_bs)$coefficients[2,1],
            summary(lm_admix_bs)$coefficients[2,4]))
 }
 
 # Set the seed and run the bootstrap regression
+# Run these steps together
 x <- .Random.seed
+ts <- Sys.time() # Create timestamp for managing seeds
+ts_str <- as.character(as.numeric(ts))
 boot_reg <- boot(data = hrs_data_mex,
                   statistic = lm_func,
                   R = 1000)
 
 # Save the seed for reproducibility
+code_dir <- "/Users/alex/Documents/projects/hrs/hispanic_admixture/code"
+fname <- paste(code_dir, paste("bootstrap_regression_seed", ts_str, ".RData", sep = ""), sep = "/") 
 save(x,
-     file = "/Users/alex/Documents/projects/hrs/hispanic_admixture/code/bootstrap_regression_seed.RData")
+     file = fname)
 
-slopes <- boot_reg$t[,1] # Slope estimates
-pvals <- boot_reg$t[,2] # p-values
+# Convert results to a data frame
+boot_reg_df <- data.frame(boot_reg$t)
+names(boot_reg_df) <- c("slopes","pvals")
 
 hist(slopes)
 hist(pvals, breaks = 20)
+
+mean_slope = round(mean(boot_reg_df$slopes),5)
+
+# Plot a histogram of slopes
+ggplot(boot_reg_df) +
+  geom_histogram(aes(x = slopes), binwidth = 0.0001, colour = "black", fill = "white") +
+  geom_vline(xintercept = mean_slope, linetype = "dashed", colour = "red") +
+  geom_text(aes(x = mean_slope, y = 120,
+                label = paste("Mean = ", mean_slope, sep = "")), data = data.frame(), hjust = -0.1) + 
+  xlab("Estimated slope of admixture") + ylab("Frequency") +
+  ggtitle("Bootstrap regression slopes (R = 1000)") +
+  ggsave(paste(img_dir, "bootstrap_regression_slopes.jpeg", sep = "/"))
+
+# Plot a histogram of p-values
+ggplot(boot_reg_df) + 
+  geom_histogram(aes(x = pvals), breaks = seq(0, 1, 0.05), colour = "black", fill = "white") +
+  geom_vline(xintercept = 0.05, linetype = "dashed", colour = "red") +
+  geom_text(aes(x = 0.05, y = 600, label = "p = 0.05"), data = data.frame(), hjust = -0.1) +
+  xlab("p-value") + ylab("Frequency") +
+  ggtitle("Bootstrap regression p-values of slopes (R = 1000)") +
+  ggsave(paste(img_dir, "boostrap_regression_pvals.jpeg", sep = "/"))
 
 # Regenerate results using the seed
 # load()

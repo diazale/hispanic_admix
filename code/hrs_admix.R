@@ -163,3 +163,31 @@ summary(lm_admix_mex_pre70s)
 hrs_data_mex_1920_1959 <- subset(hrs_data_mex, BirthYear < 1960 & BirthYear >= 1920)
 lm_1920_1959 <- lm(ADMIX3 ~ BirthYear, hrs_data_mex_1920_1959)
 summary(lm_1920_1959)
+
+##### Bootstrap regresson coefficients #####
+# Run a regression with 1000 bootstrap samples
+# Give the distributions of the p-values and slopes
+
+# Repeat 1000 times:
+# 1. Draw a bootstrap sample
+# 2. Run a regression model
+# 3. Extract the values
+
+# Define the linear model function for the bootstrap function
+# It returns two numeric values: The slope and p-value of BirthYear
+lm_func <- function(dset, i){
+  d2 <- dset[i,]
+  lm_admix_bs <- lm(ADMIX3 ~ BirthYear, data = d2)
+  return(c(summary(lm_admix_bs)$coefficients[2,1],
+           summary(lm_admix_bs)$coefficients[2,4]))
+}
+
+boot_test <- boot(data = hrs_data_mex,
+                  statistic = lm_func,
+                  R = 1000)
+
+boot_test$t[,1] # Slope estimates
+boot_test$t[,2] # p-values
+
+hist(boot_test$t[,1])
+hist(boot_test$t[,2], breaks = 20)

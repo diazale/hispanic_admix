@@ -182,12 +182,26 @@ lm_func <- function(dset, i){
            summary(lm_admix_bs)$coefficients[2,4]))
 }
 
-boot_test <- boot(data = hrs_data_mex,
+# Set the seed and run the bootstrap regression
+x <- .Random.seed
+boot_reg <- boot(data = hrs_data_mex,
                   statistic = lm_func,
                   R = 1000)
 
-boot_test$t[,1] # Slope estimates
-boot_test$t[,2] # p-values
+# Save the seed for reproducibility
+save(x,
+     file = "/Users/alex/Documents/projects/hrs/hispanic_admixture/code/bootstrap_regression_seed.RData")
 
-hist(boot_test$t[,1])
-hist(boot_test$t[,2], breaks = 20)
+slopes <- boot_reg$t[,1] # Slope estimates
+pvals <- boot_reg$t[,2] # p-values
+
+hist(slopes)
+hist(pvals, breaks = 20)
+
+# Regenerate results using the seed
+# load()
+# attr(boot_reg, "seed") <- x
+#.Random.seed <- attr(boot_reg, "seed")
+#boot_reg2 <- boot(data = hrs_data_mex,
+#                  statistic = lm_func,
+#                  R = 1000)

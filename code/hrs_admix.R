@@ -225,7 +225,19 @@ ggplot(boot_reg_df) +
   geom_text(aes(x = 0.05, y = 600, label = "p = 0.05"), data = data.frame(), hjust = -0.1) +
   xlab("p-value") + ylab("Frequency") +
   ggtitle("Bootstrap regression p-values of slopes (R = 1000)") +
-  ggsave(paste(img_dir, "boostrap_regression_pvals.jpeg", sep = "/"))
+  ggsave(paste(img_dir, "bootstrap_regression_pvals.jpeg", sep = "/"))
+
+pval_pct <- length(which(boot_reg_df$pvals < 0.05))/length(boot_reg_df$pvals)
+
+# Plot an empirical CDF
+ggplot(boot_reg_df, aes(x = pvals)) +
+  stat_ecdf(geom = "step", pad = FALSE) +
+  geom_vline(xintercept = 0.05, linetype = "dashed", colour = "red") +
+  geom_point(aes(x = 0.05, y = pval_pct), data = data.frame()) +
+  geom_text(aes(x = 0.05, y = pval_pct), label = as.character(pval_pct), data = data.frame(), hjust = -0.15) +
+  xlab("p-value") + ylab("Cumulative probability") +
+  ggtitle("ECDF of bootstrap regression p-values (R = 1000)") +
+  ggsave(paste(img_dir, "bootstrap_regressoin_pvals_ecdf.jpeg", sep = "/"))
 
 # Regenerate results using the seed
 # load()

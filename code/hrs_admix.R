@@ -9,6 +9,11 @@ library(ggridges)
 # 2. Scatterplot of Native American ancestry as a function of birth year in the Mexican Americans with the above trend line from the model
 # 3. Range of Native American ancestry in the Mexican Americans in HRS. (my note: average by birth year?)
 
+# Note: Python code used to extract HRS Mexican-American population: 
+# indices_mex = hrs_joined.loc[hrs_joined.DetailedHispanicStatus=="Mexican-American"].index
+# hrs_joined_mex = hrs_joined.iloc[indices_mex]
+# hrs_joined_mex.to_csv("/Volumes/Stockage/alex/hrs/aux/mexam.csv")
+
 data_dir <- "/Volumes/Stockage/alex/hrs/aux"
 img_dir <- "/Users/alex/Documents/projects/hrs/hispanic_admixture/images"
 
@@ -208,6 +213,9 @@ hist(pvals, breaks = 20)
 
 mean_slope = round(mean(boot_reg_df$slopes),5)
 
+h <- 5
+w <- 5
+
 # Plot a histogram of slopes
 ggplot(boot_reg_df) +
   geom_histogram(aes(x = slopes), binwidth = 0.0001, colour = "black", fill = "white") +
@@ -216,7 +224,7 @@ ggplot(boot_reg_df) +
                 label = paste("Mean = ", mean_slope, sep = "")), data = data.frame(), hjust = -0.1) + 
   xlab("Estimated slope of admixture") + ylab("Frequency") +
   ggtitle("Bootstrap regression slopes (R = 1000)") +
-  ggsave(paste(img_dir, "bootstrap_regression_slopes.jpeg", sep = "/"))
+  ggsave(paste(img_dir, paste("bootstrap_regression_slopes_", ts_str, ".jpeg", sep=""), sep = "/"),height = h,width = w)
 
 # Plot a histogram of p-values
 ggplot(boot_reg_df) + 
@@ -225,7 +233,7 @@ ggplot(boot_reg_df) +
   geom_text(aes(x = 0.05, y = 600, label = "p = 0.05"), data = data.frame(), hjust = -0.1) +
   xlab("p-value") + ylab("Frequency") +
   ggtitle("Bootstrap regression p-values of slopes (R = 1000)") +
-  ggsave(paste(img_dir, "bootstrap_regression_pvals.jpeg", sep = "/"))
+  ggsave(paste(img_dir, paste("bootstrap_regression_pvals", ts_str, ".jpeg", sep=""), sep = "/"), height = h, width = w)
 
 pval_pct <- length(which(boot_reg_df$pvals < 0.05))/length(boot_reg_df$pvals)
 
@@ -237,12 +245,93 @@ ggplot(boot_reg_df, aes(x = pvals)) +
   geom_text(aes(x = 0.05, y = pval_pct), label = as.character(pval_pct), data = data.frame(), hjust = -0.15) +
   xlab("p-value") + ylab("Cumulative probability") +
   ggtitle("ECDF of bootstrap regression p-values (R = 1000)") +
-  ggsave(paste(img_dir, "bootstrap_regressoin_pvals_ecdf.jpeg", sep = "/"))
+  ggsave(paste(img_dir, paste("bootstrap_regression_pvals_ecdf", ts_str, ".jpeg", sep=""), sep = "/"), width = w, height = h)
 
 # Regenerate results using the seed
+# original seed was 1549473605.68364
 # load()
 # attr(boot_reg, "seed") <- x
 #.Random.seed <- attr(boot_reg, "seed")
 #boot_reg2 <- boot(data = hrs_data_mex,
 #                  statistic = lm_func,
 #                  R = 1000)
+
+##### Recreate original results
+
+load('/Users/alex/Documents/projects/hrs/hispanic_admixture/code/bootstrap_regression_seed1549473605.68364.RData')
+attr(boot_reg, "seed") <- x
+.Random.seed <- attr(boot_reg, "seed")
+boot_reg2 <- boot(data = hrs_data_mex,
+                  statistic = lm_func,
+                  R = 1000)
+
+boot_reg <- boot_reg2
+
+# Convert results to a data frame
+boot_reg_df <- data.frame(boot_reg$t)
+names(boot_reg_df) <- c("slopes","pvals")
+
+mean_slope = round(mean(boot_reg_df$slopes),5)
+
+h <- 5
+w <- 5
+
+s_title <- 13
+s_x_title <- 13
+s_x_text <- 13
+s_y_title <- 13
+s_y_text <- 13
+
+ts_str <- "1549473605.68364"
+
+# Plot a histogram of slopes
+ggplot(boot_reg_df) +
+  geom_histogram(aes(x = slopes), binwidth = 0.0001, colour = "black", fill = "white") +
+  geom_vline(xintercept = mean_slope, linetype = "dashed", colour = "red") +
+  geom_text(aes(x = mean_slope, y = 120,
+                label = paste("Mean = ", mean_slope, sep = "")), data = data.frame(), hjust = -0.1) + 
+  xlab("Estimated slope of admixture") + ylab("Frequency") +
+  ggtitle("Bootstrap regression slopes (R = 1000)") +
+  theme(
+    plot.title = element_text(size = s_title),
+    axis.title.x = element_text(size = s_x_title),
+    axis.text.x = element_text(size = s_x_text),
+    axis.title.y = element_text(size = s_y_title),
+    axis.text.y = element_text(size = s_y_text)
+  ) +
+  ggsave(paste(img_dir, paste("bootstrap_regression_slopes_", ts_str, ".jpeg", sep=""), sep = "/"),height = h,width = w)
+
+# Plot a histogram of p-values
+ggplot(boot_reg_df) + 
+  geom_histogram(aes(x = pvals), breaks = seq(0, 1, 0.05), colour = "black", fill = "white") +
+  geom_vline(xintercept = 0.05, linetype = "dashed", colour = "red") +
+  geom_text(aes(x = 0.05, y = 600, label = "p = 0.05"), data = data.frame(), hjust = -0.1) +
+  xlab("p-value") + ylab("Frequency") +
+  ggtitle("Bootstrap regression p-values of slopes (R = 1000)") +
+  theme(
+    plot.title = element_text(size = s_title),
+    axis.title.x = element_text(size = s_x_title),
+    axis.text.x = element_text(size = s_x_text),
+    axis.title.y = element_text(size = s_y_title),
+    axis.text.y = element_text(size = s_y_text)
+  ) +
+  ggsave(paste(img_dir, paste("bootstrap_regression_pvals", ts_str, ".jpeg", sep=""), sep = "/"), height = h, width = w)
+
+pval_pct <- length(which(boot_reg_df$pvals < 0.05))/length(boot_reg_df$pvals)
+
+# Plot an empirical CDF
+ggplot(boot_reg_df, aes(x = pvals)) +
+  stat_ecdf(geom = "step", pad = FALSE) +
+  geom_vline(xintercept = 0.05, linetype = "dashed", colour = "red") +
+  geom_point(aes(x = 0.05, y = pval_pct), data = data.frame()) +
+  geom_text(aes(x = 0.05, y = pval_pct), label = as.character(pval_pct), data = data.frame(), hjust = -0.15) +
+  xlab("p-value") + ylab("Cumulative probability") +
+  ggtitle("ECDF of bootstrap regression p-values (R = 1000)") +
+  theme(
+    plot.title = element_text(size = s_title),
+    axis.title.x = element_text(size = s_x_title),
+    axis.text.x = element_text(size = s_x_text),
+    axis.title.y = element_text(size = s_y_title),
+    axis.text.y = element_text(size = s_y_text)
+  ) +
+  ggsave(paste(img_dir, paste("bootstrap_regression_pvals_ecdf", ts_str, ".jpeg", sep=""), sep = "/"), width = w, height = h)

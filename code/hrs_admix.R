@@ -256,6 +256,59 @@ ggplot(boot_reg_df, aes(x = pvals)) +
 #                  statistic = lm_func,
 #                  R = 1000)
 
+##### Stacked barplot for admixture
+df_plotting <- hrs_data_mex[,which(colnames(hrs_data_mex) %in% c('ID','ADMIX1','ADMIX2','ADMIX3'))]
+df_plotting$ADMIX1 <- round(df_plotting$ADMIX1, 2)
+df_plotting$ADMIX2 <- round(df_plotting$ADMIX2, 2)
+df_plotting$ADMIX3 <- round(df_plotting$ADMIX3, 2)
+
+# For the sake of a smooth graph, we need it to add up to 1
+# Add/subtract from the largest as needed
+df_plotting$sum <- with(df_plotting, round(ADMIX1 + ADMIX2 + ADMIX3, 2))
+
+# quick and dirty hack to loop through each row
+# find the max and add/subtract 0.01 as necessary.
+# take the first index in edge case where two populations have equal max levels
+for (row in 1:nrow(df_plotting)) {
+  if (df_plotting[row,]$sum < 1.00) {
+    col_idx <- which(df_plotting[row,c(2:4)] == max(df_plotting[row,c(2:4)]))[1] + 1
+    df_plotting[row, col_idx] <- df_plotting[row, col_idx] + 0.01
+  } else if (df_plotting[row,]$sum > 1.00) {
+    col_idx <- which(df_plotting[row,c(2:4)] == max(df_plotting[row,c(2:4)]))[1] + 1
+    df_plotting[row, col_idx] <- df_plotting[row, col_idx] - 0.01
+  }
+}
+
+df_plotting$ID <- reorder(df_plotting$ID, df_plotting$ADMIX3)
+
+#df_plotting$sum2 <- with(df_plotting, ADMIX1 + ADMIX2 + ADMIX3)
+
+#df_plotting[row,c(2:4)which(df_plotting[row,c(2:4)] == max(df_plotting[row,c(2:4)]))
+
+# Get the index of the column with the max value for each row in the data frame
+# NEVRMIND gonna do it the crappy hacky way
+#max_cols <- df_plotting[,max.col(df_plotting[,c(2:4)]) + 1]
+#apply(X=df_plotting[,c(2:4)], MARGIN=1, FUN=max)
+
+df_plotting_long <- gather(df_plotting, ancestral_pop, admix, ADMIX1:ADMIX3, factor_key = TRUE)
+#df_plotting_long$ID <- as.factor(df_plotting_long$ID)
+
+admixture_plot <- ggplot(df_plotting_long, aes(y = admix, x = ID, fill = ancestral_pop)) +
+  geom_bar(stat = "identity", width = 1) + 
+  scale_fill_discrete(labels=c('African','European','Native American')) +
+  ylab('Global ancestry estimate') +
+  ylim(0,1) +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.title = element_blank(),
+        axis.title.y = element_text(size=15),
+        axis.text.y = element_text(size=15))
+
+admixture_plot
+
+ggsave(paste(img_dir, 'admixture_plot.jpeg', sep='/'), admixture_plot, width = 11, height = 6)
+
 ##### Recreate original results
 
 load('/Users/alex/Documents/projects/hrs/hispanic_admixture/code/bootstrap_regression_seed1549473605.68364.RData')

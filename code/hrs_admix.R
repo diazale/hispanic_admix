@@ -33,7 +33,7 @@ hrs_data_mex$BirthRegionNum <- as.factor(hrs_data_mex$BirthRegionNum)
 
 ##### Ancestry as a function of birth year #####
 # Native American ancestry
-lm_admix <- lm(ADMIX3 ~ BirthYear + BirthRegionName, data = hrs_data_mex)
+lm_admix <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex)
 summary(lm_admix)
 
 # European ancestry
@@ -60,12 +60,44 @@ ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) +
 # Make a density plot of the admixture levels
 # Throw in birth year too (maybe bin by five-year levels and do box plots?)
 
+# Histogram of ages
+ggplot(data = hrs_data_mex) +
+  geom_histogram(aes(x = BirthYear)) +
+  xlab("Birth year") + ylab("Count") +
+  ggtitle("Histogram of birth years") +
+  theme(axis.title.y = element_text(size=15),
+        axis.text.y = element_text(size=15),
+        axis.title.x = element_text(size=15),
+        axis.text.x = element_text(size=15),
+        plot.title = element_text(size=15)
+        ) +
+  ggsave(paste(img_dir, "histogram_mexam_birthyear.jpeg", sep = "/"), height = 5, width = 5)
+
+# Density of ages
+ggplot(data = hrs_data_mex) +
+  geom_density(aes(x = BirthYear)) +
+  xlab("Birth year") + ylab("Density") +
+  ggtitle("Density of birth years") +
+  theme(axis.title.y = element_text(size=15),
+        axis.text.y = element_text(size=15),
+        axis.title.x = element_text(size=15),
+        axis.text.x = element_text(size=15),
+        plot.title = element_text(size=15)
+  ) +
+  ggsave(paste(img_dir, "density_mexam_birthyear.jpeg", sep = "/"), height = 5, width = 5)
+
 # Basic density -- look at the entire population
 ggplot(data = hrs_data_mex, aes(x = ADMIX3)) +
   geom_density() +
-  xlab("Estimated Native American admixture") +
-  ggtitle("Density plot of estimated admixture levels (self-identified Mexican-Americans, HRS)") +
-  ggsave(paste(img_dir, "density_mexam_admix_native.jpeg", sep = "/"))
+  xlab("Estimated global Native American ancestry") + ylab("Density") +
+  #ggtitle("Estimated global Native American ancestry") +
+  theme(axis.title.y = element_text(size=15),
+        axis.text.y = element_text(size=15),
+        axis.title.x = element_text(size=15),
+        axis.text.x = element_text(size=15),
+        plot.title = element_text(size=15)
+  ) +
+  ggsave(paste(img_dir, "density_mexam_admix_native.jpeg", sep = "/"), height = 5, width = 5)
 
 # Use the age-range bins
 ggplot(data = hrs_data_mex, aes(x = ADMIX3, group = AgeRange, fill = AgeRange)) +

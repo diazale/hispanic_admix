@@ -1,6 +1,8 @@
 library(tidyverse)
 library(boot)
 library(ggridges)
+library(tidyr)
+library(dplyr)
 
 # Run some linear regression on admixture levels on the HRS
 
@@ -420,3 +422,9 @@ ggplot(boot_reg_df, aes(x = pvals)) +
     axis.text.y = element_text(size = s_y_text)
   ) +
   ggsave(paste(img_dir, paste("bootstrap_regression_pvals_ecdf", ts_str, ".jpeg", sep=""), sep = "/"), width = w, height = h)
+
+##### Summary stats #####
+summary(hrs_data_mex[,which(colnames(hrs_data_mex) %in% c("BirthYear","AgeRange","Gender"))])
+
+hrs_data_mex %>%
+  group_by(Gender, AgeRange) %>%

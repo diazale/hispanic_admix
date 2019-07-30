@@ -428,3 +428,14 @@ summary(hrs_data_mex[,which(colnames(hrs_data_mex) %in% c("BirthYear","AgeRange"
 
 hrs_data_mex %>%
   group_by(Gender, AgeRange) %>%
+  summarize(n=n())
+
+summary(hrs_data_mex$ADMIX3)
+
+hrs_data_mex %>%
+  group_by(Gender) %>%
+  summarize(mean=mean(ADMIX3), median=median(ADMIX3), min=min(ADMIX3), max=max(ADMIX3))
+
+hrs_data_mex %>%
+  group_by(AgeRange) %>%
+  summarize(mean=mean(ADMIX3), median=median(ADMIX3), min=min(ADMIX3), max=max(ADMIX3))

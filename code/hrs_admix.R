@@ -420,8 +420,8 @@ ggplot(boot_reg_df, aes(x = pvals)) +
 ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) + 
   geom_point(size=0.5) +
   geom_smooth(method = "lm", se = FALSE) +
-  xlab("Birth Year") + ylab("Estimated admixture") +
-  ggtitle("Estimated Native American admixture vs birth year") +
+  xlab("Birth Year") + ylab("Estimated ancestry") +
+  ggtitle("Estimated Native American ancestry vs birth year") +
   theme(
     plot.title = element_text(size = s_title),
     axis.title.x = element_text(size = s_x_title),

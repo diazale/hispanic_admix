@@ -51,13 +51,6 @@ hrs_data_mex_temp <- subset(hrs_data_mex, BirthYear < 1970 && as.character(Race_
 lm_admix_trimmed <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex_temp)
 summary(lm_admix_trimmed)
 
-ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) + 
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  xlab("Birth Year") + ylab("Estimated admixture level") +
-  ggtitle("Estimated Native American admixture level vs birth year") +
-  ggsave(paste(img_dir, "regression_admix_vs_birthyear.jpeg", sep = "/"), height = 5.5, width = 5.5)
-
 ##### Range of Native American ancestry #####
 # Make a density plot of the admixture levels
 # Throw in birth year too (maybe bin by five-year levels and do box plots?)
@@ -422,6 +415,21 @@ ggplot(boot_reg_df, aes(x = pvals)) +
     axis.text.y = element_text(size = s_y_text)
   ) +
   ggsave(paste(img_dir, paste("bootstrap_regression_pvals_ecdf", ts_str, ".jpeg", sep=""), sep = "/"), width = w, height = h)
+
+# Plot the regression of birth year and admixture
+ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) + 
+  geom_point(size=0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Birth Year") + ylab("Estimated admixture") +
+  ggtitle("Estimated Native American admixture vs birth year") +
+  theme(
+    plot.title = element_text(size = s_title),
+    axis.title.x = element_text(size = s_x_title),
+    axis.text.x = element_text(size = s_x_text),
+    axis.title.y = element_text(size = s_y_title),
+    axis.text.y = element_text(size = s_y_text)
+  ) +
+  ggsave(paste(img_dir, "regression_admix_vs_birthyear.jpeg", sep = "/"), height = w, width = h)
 
 ##### Summary stats #####
 summary(hrs_data_mex[,which(colnames(hrs_data_mex) %in% c("BirthYear","AgeRange","Gender"))])

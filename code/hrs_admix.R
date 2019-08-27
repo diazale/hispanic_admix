@@ -55,8 +55,8 @@ ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   xlab("Birth Year") + ylab("Estimated admixture level") +
-  ggtitle("Estimated Native American admixture level vs birth year (Self-identified Mexican-Americans, HRS)") +
-  ggsave(paste(img_dir, "regression_admix_vs_birthyear.jpeg", sep = "/"))
+  ggtitle("Estimated Native American admixture level vs birth year") +
+  ggsave(paste(img_dir, "regression_admix_vs_birthyear.jpeg", sep = "/"), height = 5.5, width = 5.5)
 
 ##### Range of Native American ancestry #####
 # Make a density plot of the admixture levels

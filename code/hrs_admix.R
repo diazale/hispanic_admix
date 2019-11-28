@@ -351,6 +351,11 @@ boot_reg <- boot_reg2
 boot_reg_df <- data.frame(boot_reg$t)
 names(boot_reg_df) <- c("slopes","pvals")
 
+# see how many slopes are positive
+sum(boot_reg_df$slopes > 0)
+sum(boot_reg_df$slopes < 0)
+sum(boot_reg_df$slopes > 0)/nrow(boot_reg_df)
+
 mean_slope = round(mean(boot_reg_df$slopes),5)
 
 h <- 5
@@ -447,3 +452,26 @@ hrs_data_mex %>%
 hrs_data_mex %>%
   group_by(AgeRange) %>%
   summarize(mean=mean(ADMIX3), median=median(ADMIX3), min=min(ADMIX3), max=max(ADMIX3))
+
+
+##### Interaction models #####
+library(interactions)
+# Look for interaction between birth year and being born outside of the US (BirthRegionNum)
+# This is a bit different from Melissa's data, which has whether the parents were born in the US
+
+hrs_data_mex$born_in_us <- with(hrs_data_mex, ifelse(BirthRegionNum==11,0,1))
+hrs_data_mex$born_in_us <- factor(hrs_data_mex$born_in_us)
+
+lm_admix_usborn <- lm(ADMIX3 ~ BirthYear + born_in_us, data = hrs_data_mex)
+summary(lm_admix_usborn)
+
+lm_admix_usborn_interaction <- lm(ADMIX3 ~ BirthYear + born_in_us + BirthYear*born_in_us, data = hrs_data_mex)  
+summary(lm_admix_usborn_interaction)
+
+interact_plot(lm_admix_usborn_interaction, pred = BirthYear, modx = born_in_us, data = hrs_data_mex,
+              x.label = "Birth year", y.label = "Estimated ancestry",
+              main.title = "Estimated Native American ancestry", legend.main = "Born in US")
+ggsave(paste(img_dir, "regression_admix_vs_birthyear_born_us.jpeg", sep = "/"), height = w, width = h)
+
+# residual diagnostics
+plot(lm_admix_usborn_interaction)

@@ -7,9 +7,9 @@ library(dplyr)
 # Run some linear regression on admixture levels on the HRS
 
 #Required results:
-# 1. Summary of model Native American ancestry by birth year
-# 2. Scatterplot of Native American ancestry as a function of birth year in the Mexican Americans with the above trend line from the model
-# 3. Range of Native American ancestry in the Mexican Americans in HRS. (my note: average by birth year?)
+# 1. Summary of model Amerindigenous ancestry by birth year
+# 2. Scatterplot of Amerindigenous ancestry as a function of birth year in the Mexican Americans with the above trend line from the model
+# 3. Range of Amerindigenous ancestry in the Mexican Americans in HRS. (my note: average by birth year?)
 
 # Note: Python code used to extract HRS Mexican-American population: 
 # indices_mex = hrs_joined.loc[hrs_joined.DetailedHispanicStatus=="Mexican-American"].index
@@ -31,10 +31,10 @@ hrs_data_mex$BirthRegionNum <- as.factor(hrs_data_mex$BirthRegionNum)
 # We're interested in the three admixture values
 # ADMIX1 = AFR
 # ADMIX2 = EUR
-# ADMIX3 = Native American / Asian
+# ADMIX3 = Amerindigenous
 
 ##### Ancestry as a function of birth year #####
-# Native American ancestry
+# Amerindigenous ancestry
 lm_admix <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex)
 summary(lm_admix)
 
@@ -51,7 +51,7 @@ hrs_data_mex_temp <- subset(hrs_data_mex, BirthYear < 1970 && as.character(Race_
 lm_admix_trimmed <- lm(ADMIX3 ~ BirthYear, data = hrs_data_mex_temp)
 summary(lm_admix_trimmed)
 
-##### Range of Native American ancestry #####
+##### Range of Amerindigenous ancestry #####
 # Make a density plot of the admixture levels
 # Throw in birth year too (maybe bin by five-year levels and do box plots?)
 
@@ -84,15 +84,15 @@ ggplot(data = hrs_data_mex) +
 # Basic density -- look at the entire population
 ggplot(data = hrs_data_mex, aes(x = ADMIX3)) +
   geom_density() +
-  xlab("Estimated global Native American ancestry") + ylab("Density") +
-  #ggtitle("Estimated global Native American ancestry") +
+  xlab("Estimated global Amerindigenous ancestry") + ylab("Density") +
+  #ggtitle("Estimated global Amerindigenous ancestry") +
   theme(axis.title.y = element_text(size=15),
         axis.text.y = element_text(size=15),
         axis.title.x = element_text(size=15),
         axis.text.x = element_text(size=15),
         plot.title = element_text(size=15)
   ) +
-  ggsave(paste(img_dir, "density_mexam_admix_native.jpeg", sep = "/"), height = 5, width = 5)
+  ggsave(paste(img_dir, "density_mexam_admix_Amerindigenous.jpeg", sep = "/"), height = 5, width = 5)
 
 # Use the age-range bins
 ggplot(data = hrs_data_mex, aes(x = ADMIX3, group = AgeRange, fill = AgeRange)) +
@@ -110,11 +110,11 @@ ggplot(mean_admix, aes(ADMIX3)) +
   facet_wrap(~AgeRange, ncol = 1) +
   geom_vline(aes(xintercept = mean_admix)) +
   xlab("Estimated admixture level") +
-  ggtitle("Densities of estimated Native American admixture by age range (self-identified Mexican-Americans, HRS)") +
+  ggtitle("Densities of estimated Amerindigenous admixture by age range (self-identified Mexican-Americans, HRS)") +
   ggsave(paste(img_dir, "age_range_density.jpeg", sep = "/"))
 
-##### Do 1000 bootstrap replicates of Mex-Am Native ancestry by decade and make a ridgeline plot #####
-# Can you do 1000 bootstrap sampling iterations for Native American ancestry for each decade of the
+##### Do 1000 bootstrap replicates of Mex-Am Amerindigenous ancestry by decade and make a ridgeline plot #####
+# Can you do 1000 bootstrap sampling iterations for Amerindigenous ancestry for each decade of the
 # HRS Mexican Americans and then plot the distribution of means in a ridgeline plot?
 
 # Define a decade variable
@@ -322,7 +322,7 @@ df_plotting_long <- gather(df_plotting, ancestral_pop, admix, ADMIX1:ADMIX3, fac
 
 admixture_plot <- ggplot(df_plotting_long, aes(y = admix, x = ID, fill = ancestral_pop)) +
   geom_bar(stat = "identity", width = 1) + 
-  scale_fill_discrete(labels=c('African','European','Native American')) +
+  scale_fill_discrete(labels=c('African','European','Amerindigenous')) +
   ylab('Global ancestry estimate') +
   ylim(0,1) +
   theme(axis.title.x = element_blank(),
@@ -426,7 +426,7 @@ ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) +
   geom_point(size=0.5) +
   geom_smooth(method = "lm", se = FALSE) +
   xlab("Birth Year") + ylab("Estimated ancestry") +
-  ggtitle("Estimated Native American ancestry vs birth year") +
+  ggtitle("Estimated Amerindigenous ancestry vs birth year") +
   theme(
     plot.title = element_text(size = s_title),
     axis.title.x = element_text(size = s_x_title),
@@ -470,7 +470,7 @@ summary(lm_admix_usborn_interaction)
 
 interact_plot(lm_admix_usborn_interaction, pred = BirthYear, modx = born_in_us, data = hrs_data_mex,
               x.label = "Birth year", y.label = "Estimated ancestry",
-              main.title = "Estimated Native American ancestry", legend.main = "Born in US")
+              main.title = "Estimated Amerindigenous ancestry", legend.main = "Born in US")
 ggsave(paste(img_dir, "regression_admix_vs_birthyear_born_us.jpeg", sep = "/"), height = w, width = h)
 
 # residual diagnostics

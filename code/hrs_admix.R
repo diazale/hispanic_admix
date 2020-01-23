@@ -334,7 +334,7 @@ admixture_plot <- ggplot(df_plotting_long, aes(y = admix, x = ID, fill = ancestr
 
 admixture_plot
 
-ggsave(paste(img_dir, 'admixture_plot.jpeg', sep='/'), admixture_plot, width = 11, height = 6)
+ggsave(paste(img_dir, 'admixture_plot_Amerindigenous.jpeg', sep='/'), admixture_plot, width = 11, height = 6)
 
 ##### Recreate original results
 
@@ -384,7 +384,7 @@ ggplot(boot_reg_df) +
     axis.title.y = element_text(size = s_y_title),
     axis.text.y = element_text(size = s_y_text)
   ) +
-  ggsave(paste(img_dir, paste("bootstrap_regression_slopes_", ts_str, ".jpeg", sep=""), sep = "/"),height = h,width = w)
+  ggsave(paste(img_dir, paste("bootstrap_regression_slopes_", ts_str, "_Amerindigenous.jpeg", sep=""), sep = "/"),height = h,width = w)
 
 # Plot a histogram of p-values
 ggplot(boot_reg_df) + 
@@ -400,7 +400,7 @@ ggplot(boot_reg_df) +
     axis.title.y = element_text(size = s_y_title),
     axis.text.y = element_text(size = s_y_text)
   ) +
-  ggsave(paste(img_dir, paste("bootstrap_regression_pvals", ts_str, ".jpeg", sep=""), sep = "/"), height = h, width = w)
+  ggsave(paste(img_dir, paste("bootstrap_regression_pvals", ts_str, "_Amerindigenous.jpeg", sep=""), sep = "/"), height = h, width = w)
 
 pval_pct <- length(which(boot_reg_df$pvals < 0.05))/length(boot_reg_df$pvals)
 
@@ -419,7 +419,7 @@ ggplot(boot_reg_df, aes(x = pvals)) +
     axis.title.y = element_text(size = s_y_title),
     axis.text.y = element_text(size = s_y_text)
   ) +
-  ggsave(paste(img_dir, paste("bootstrap_regression_pvals_ecdf", ts_str, ".jpeg", sep=""), sep = "/"), width = w, height = h)
+  ggsave(paste(img_dir, paste("bootstrap_regression_pvals_ecdf", ts_str, "_Amerindigenous.jpeg", sep=""), sep = "/"), width = w, height = h)
 
 # Plot the regression of birth year and admixture
 ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) + 
@@ -434,7 +434,7 @@ ggplot(data = hrs_data_mex, aes(y = ADMIX3, x = BirthYear)) +
     axis.title.y = element_text(size = s_y_title),
     axis.text.y = element_text(size = s_y_text)
   ) +
-  ggsave(paste(img_dir, "regression_admix_vs_birthyear.jpeg", sep = "/"), height = w, width = h)
+  ggsave(paste(img_dir, "regression_admix_vs_birthyear_Amerindigenous.jpeg", sep = "/"), height = w, width = h)
 
 ##### Summary stats #####
 summary(hrs_data_mex[,which(colnames(hrs_data_mex) %in% c("BirthYear","AgeRange","Gender"))])
@@ -471,7 +471,7 @@ summary(lm_admix_usborn_interaction)
 interact_plot(lm_admix_usborn_interaction, pred = BirthYear, modx = born_in_us, data = hrs_data_mex,
               x.label = "Birth year", y.label = "Estimated ancestry",
               main.title = "Estimated Amerindigenous ancestry", legend.main = "Born in US")
-ggsave(paste(img_dir, "regression_admix_vs_birthyear_born_us.jpeg", sep = "/"), height = w, width = h)
+ggsave(paste(img_dir, "regression_admix_vs_birthyear_born_us_Amerindigenous.jpeg", sep = "/"), height = w, width = h)
 
 # residual diagnostics
 plot(lm_admix_usborn_interaction)
